@@ -1,20 +1,20 @@
 import _ from 'lodash';
 import Ajv from 'ajv';
 
-const removeChildrenDispatches = (dispatches, dispatchName) => {
-  Object.keys(dispatches)
+const removeChildrenDispatches = (dispatch, dispatchName) => {
+  Object.keys(dispatch)
     .forEach((name) => {
       if (name !== dispatchName
         && name.indexOf(`${dispatchName}.`) === 0
       ) {
-        delete dispatches[name];
+        delete dispatch[name];
       }
     });
 };
 
 const walk = (
   state,
-  dispatches,
+  dispatch,
   schemas,
   pathList,
 ) => {
@@ -29,13 +29,13 @@ const walk = (
     if (schemas[dispatchName]) {
       schemas[dispatchName](value);
     }
-    dispatches[dispatchName] = (valueNext) => {
+    dispatch[dispatchName] = (valueNext) => {
       if (schemas[dispatchName]) {
         schemas[dispatchName](valueNext);
       }
       const valuePrev = _.get(state, currentPathList);
       if (_.isPlainObject(valuePrev)) {
-        removeChildrenDispatches(dispatches, dispatchName);
+        removeChildrenDispatches(dispatch, dispatchName);
       }
       if (!schemas[dispatchName]) {
         let j = depth;
@@ -62,16 +62,17 @@ const walk = (
       if (_.isPlainObject(valueNext)) {
         walk(
           state,
-          dispatches,
+          dispatch,
           schemas,
           currentPathList,
         );
       }
+      return state;
     };
     if (_.isPlainObject(value)) {
       walk(
         state,
-        dispatches,
+        dispatch,
         schemas,
         currentPathList,
       );
@@ -86,7 +87,7 @@ export default (
   if (!_.isPlainObject(state)) {
     return {};
   }
-  const dispatches = {};
+  const dispatch = {};
   const validates = {};
   const validatePathnameList = Object.keys(schemas);
 
@@ -104,8 +105,8 @@ export default (
 
   walk(
     state,
-    dispatches,
+    dispatch,
     validates,
   );
-  return dispatches;
+  return dispatch;
 };

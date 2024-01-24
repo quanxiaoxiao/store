@@ -1,37 +1,20 @@
 import { createStore, applyMiddleware } from 'redux';
-
-const generateDispatch = (actions, store) => Object
-  .keys(actions)
-  .reduce((acc, actionName) => ({
-    ...acc,
-    [actionName]: (payload) => {
-      if (typeof payload === 'function') {
-        const ret = payload(store.getState());
-        store.dispatch({
-          type: actionName,
-          payload: ret,
-        });
-      } else {
-        store.dispatch({
-          type: actionName,
-          payload,
-        });
-      }
-    },
-  }), {});
+import generateDispatches from './generateDispatches.mjs';
 
 export default ({
   initialState,
-  actions,
   schemas = {},
   middlewares = [],
 }) => {
+  const actions = generateDispatches(initialState, schemas);
+
   const reducer = (state, action) => {
     if (actions[action.type]) {
-      return actions[action.type](state, action.payload);
+      return actions[action.type](action.payload);
     }
     return state;
   };
+
   const store = createStore(
     reducer,
     initialState,
@@ -39,6 +22,14 @@ export default ({
   );
   return {
     getState: () => store.getState(),
-    dispatch: generateDispatch(actions, store),
+    dispatch: Object.keys(actions).reduce((acc, actionName) => ({
+      ...acc,
+      [actionName]: (value) => {
+        store.dispatch({
+          type: actionName,
+          payload: value,
+        });
+      },
+    }), {}),
   };
 };

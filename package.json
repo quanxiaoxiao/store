@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "lint": "tsc"
+    "lint": "tsc",
+    "test": "node --test"
   },
   "main": "./src/index.mjs",
   "exports": {

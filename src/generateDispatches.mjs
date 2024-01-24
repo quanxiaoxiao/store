@@ -15,56 +15,55 @@ const removeChildrenDispatches = (dispatches, dispatchName) => {
 const walk = (
   state,
   dispatches,
-  pathList,
   schemas,
-  root,
+  pathList,
 ) => {
-  const nameList = Object.keys(state);
-  for (let i = 0; i < nameList.length; i++) {
-    const name = nameList[i];
-    const dispatchName = [...pathList, name.replace(/\./g, '\\.')].join('.');
+  const depth = _.isEmpty(pathList) ? 0 : pathList.length;
+  const obj = _.isEmpty(pathList) ? state : _.get(state, pathList);
+  const dataKeyList = Object.keys(obj);
+  for (let i = 0; i < dataKeyList.length; i++) {
+    const dataKey = dataKeyList[i];
+    const value = obj[dataKey];
+    const currentPathList = [...pathList || [], dataKey];
+    const dispatchName = currentPathList.map((s) => s.replace(/\./g, '\\.')).join('.');
     if (schemas[dispatchName]) {
-      schemas[dispatchName](state[name]);
+      schemas[dispatchName](value);
     }
-
     dispatches[dispatchName] = (valueNext) => {
       if (schemas[dispatchName]) {
         schemas[dispatchName](valueNext);
-      } else {
-        let j = pathList.length;
+      }
+      const valuePrev = _.get(state, currentPathList);
+      if (_.isPlainObject(valuePrev)) {
+        removeChildrenDispatches(dispatches, dispatchName);
+      }
+      _.set(state, currentPathList, valueNext);
+      let j = depth;
+      if (!schemas[dispatchName]) {
         while (j > 0) {
-          const validateKey = pathList.slice(0, j).join('.');
+          const validateKey = currentPathList.slice(0, j).map((s) => s.replace(/\./g, '\\.')).join('.');
           if (schemas[validateKey]) {
-            console.log(_.get(root, pathList.slice(0, j)));
-            schemas[validateKey](_.get(root, pathList.slice(0, j)));
+            schemas[validateKey](_.get(state, currentPathList.slice(0, j)));
             break;
           }
           j--;
         }
       }
-      const valuePrev = state[name];
-      state[name] = valueNext;
-      if (_.isPlainObject(valuePrev)) {
-        removeChildrenDispatches(dispatches, dispatchName);
-      }
       if (_.isPlainObject(valueNext)) {
         walk(
           state,
           dispatches,
-          pathList,
           schemas,
-          root,
+          currentPathList,
         );
       }
     };
-    const value = state[name];
     if (_.isPlainObject(value)) {
       walk(
-        value,
+        state,
         dispatches,
-        [...pathList, name],
         schemas,
-        root,
+        currentPathList,
       );
     }
   }
@@ -78,7 +77,6 @@ export default (
     return {};
   }
   const dispatches = {};
-  const pathList = [];
   const validates = {};
   const validatePathnameList = Object.keys(schemas);
 
@@ -97,9 +95,7 @@ export default (
   walk(
     state,
     dispatches,
-    pathList,
     validates,
-    state,
   );
   return dispatches;
 };

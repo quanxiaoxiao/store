@@ -188,4 +188,11 @@ test('generateDispatches schema', () => {
   assert.throws(() => {
     dispatches['obj.name'](999);
   });
+  assert.equal(state.obj.name, 'eee');
+  assert.throws(() => {
+    dispatches['obj.age'](4);
+  });
+  assert.equal(state.obj.age, 77);
+  dispatches['obj.age'](8);
+  assert.equal(state.obj.age, 8);
 });

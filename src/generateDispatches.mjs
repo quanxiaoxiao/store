@@ -37,18 +37,28 @@ const walk = (
       if (_.isPlainObject(valuePrev)) {
         removeChildrenDispatches(dispatches, dispatchName);
       }
-      _.set(state, currentPathList, valueNext);
-      let j = depth;
       if (!schemas[dispatchName]) {
+        let j = depth;
+        let temp = {
+          ..._.get(state, currentPathList.slice(0, depth)),
+          [dataKey]: valueNext,
+        };
         while (j > 0) {
           const validateKey = currentPathList.slice(0, j).map((s) => s.replace(/\./g, '\\.')).join('.');
+          if (j !== depth) {
+            temp = {
+              ...temp,
+              [currentPathList[j]]: _.get(state, currentPathList.slice(0, j)),
+            };
+          }
           if (schemas[validateKey]) {
-            schemas[validateKey](_.get(state, currentPathList.slice(0, j)));
+            schemas[validateKey](temp);
             break;
           }
           j--;
         }
       }
+      _.set(state, currentPathList, valueNext);
       if (_.isPlainObject(valueNext)) {
         walk(
           state,

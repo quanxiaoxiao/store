@@ -22,14 +22,14 @@ export default ({
   );
   return {
     getState: () => store.getState(),
-    dispatch: Object.keys(actions).reduce((acc, actionName) => ({
-      ...acc,
-      [actionName]: (value) => {
-        store.dispatch({
-          type: actionName,
-          payload: value,
-        });
-      },
-    }), {}),
+    dispatch: (key, value) => {
+      if (!actions[key]) {
+        throw new Error(`\`${key}\` unable dispatch`);
+      }
+      store.dispatch({
+        type: key,
+        payload: value,
+      });
+    },
   };
 };

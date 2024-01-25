@@ -1,4 +1,5 @@
 import { createStore, applyMiddleware } from 'redux';
+import _ from 'lodash';
 import generateActions from './generateActions.mjs';
 
 export default ({
@@ -26,10 +27,18 @@ export default ({
       if (!actions[key]) {
         throw new Error(`\`${key}\` unable dispatch`);
       }
-      store.dispatch({
-        type: key,
-        payload: value,
-      });
+      if (typeof value === 'function') {
+        const pathList = key.split(/(?<!\\)\./).map((d) => d.replace(/\\\./g, '.'));
+        store.dispatch({
+          type: key,
+          payload: value(_.get(store.getState(), pathList)),
+        });
+      } else {
+        store.dispatch({
+          type: key,
+          payload: value,
+        });
+      }
     },
   };
 };

@@ -108,5 +108,6 @@ export default (
     dispatch,
     validates,
   );
+
   return dispatch;
 };

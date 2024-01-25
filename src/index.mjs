@@ -1,12 +1,12 @@
 import { createStore, applyMiddleware } from 'redux';
-import generateDispatches from './generateDispatches.mjs';
+import generateActions from './generateActions.mjs';
 
 export default ({
   initialState,
   schemas = {},
   middlewares = [],
 }) => {
-  const actions = generateDispatches(initialState, schemas);
+  const actions = generateActions(initialState, schemas);
 
   const reducer = (state, action) => {
     if (actions[action.type]) {

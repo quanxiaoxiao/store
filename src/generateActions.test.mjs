@@ -1,17 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import generateDispatches from './generateDispatches.mjs';
+import generateActions from './generateActions.mjs';
 
-test('generateDispatches return empty', () => {
-  assert.deepEqual(generateDispatches(null), {});
-  assert.deepEqual(generateDispatches(1), {});
-  assert.deepEqual(generateDispatches({}), {});
-  assert.deepEqual(generateDispatches(['aaa']), {});
-  assert.deepEqual(generateDispatches([{ name: 'aaa' }]), {});
-  assert.deepEqual(generateDispatches('aaa'), {});
+test('generateActions return empty', () => {
+  assert.deepEqual(generateActions(null), {});
+  assert.deepEqual(generateActions(1), {});
+  assert.deepEqual(generateActions({}), {});
+  assert.deepEqual(generateActions(['aaa']), {});
+  assert.deepEqual(generateActions([{ name: 'aaa' }]), {});
+  assert.deepEqual(generateActions('aaa'), {});
 });
 
-test('generateDispatches 1', () => {
+test('generateActions 1', () => {
   const state = {
     name: 'aaa',
     'a.b': 'ccc',
@@ -20,7 +20,7 @@ test('generateDispatches 1', () => {
     },
     age: 33,
   };
-  const dispatches = generateDispatches(state);
+  const dispatches = generateActions(state);
   assert.equal(typeof dispatches.name, 'function');
   assert.equal(typeof dispatches.age, 'function');
   dispatches.name('cqq');
@@ -32,14 +32,14 @@ test('generateDispatches 1', () => {
   assert.equal(state['a.b'], '2');
 });
 
-test('generateDispatches 2', () => {
+test('generateActions 2', () => {
   const state = {
     name: 'aaa',
     obj: {
       name: 'bbb',
     },
   };
-  const dispatches = generateDispatches(state);
+  const dispatches = generateActions(state);
   dispatches['obj.name']('cqq');
   assert.equal(state.obj.name, 'cqq');
   assert.equal(state.name, 'aaa');
@@ -57,7 +57,7 @@ test('generateDispatches 2', () => {
   assert.equal(state.obj.foo, 'cqqq');
 });
 
-test('generateDispatches deep state 1', () => {
+test('generateActions deep state 1', () => {
   const state = {
     name: 'aaa',
     obj: {
@@ -67,7 +67,7 @@ test('generateDispatches deep state 1', () => {
       },
     },
   };
-  const dispatches = generateDispatches(state);
+  const dispatches = generateActions(state);
   assert.equal(typeof dispatches['obj.name'], 'undefined');
   assert.equal(typeof dispatches['obj.foo'], 'function');
   assert.equal(typeof dispatches['obj.foo.name'], 'function');
@@ -81,7 +81,7 @@ test('generateDispatches deep state 1', () => {
   assert.equal(typeof dispatches['obj.foo.name'], 'undefined');
 });
 
-test('generateDispatches deep state 2', () => {
+test('generateActions deep state 2', () => {
   const state = {
     name: 'aaa',
     obj: {
@@ -93,7 +93,7 @@ test('generateDispatches deep state 2', () => {
     },
     big: null,
   };
-  const dispatches = generateDispatches(state);
+  const dispatches = generateActions(state);
   dispatches.obj({ ding: 'eee', foo: null });
   assert.equal(state.obj.ding, 'eee');
   assert.equal(state.obj.foo, null);
@@ -110,7 +110,7 @@ test('generateDispatches deep state 2', () => {
   assert.deepEqual(state.big.cqq, { aa: 'bb', cc: 'dd' });
 });
 
-test('generateDispatches schema', () => {
+test('generateActions schema', () => {
   const state = {
     name: 'aaa',
     obj: {
@@ -120,14 +120,14 @@ test('generateDispatches schema', () => {
     arr1: [1, 2, 3],
   };
   assert.throws(() => {
-    generateDispatches(state, {
+    generateActions(state, {
       name: {
         type: 'number',
       },
     });
   });
 
-  const dispatches = generateDispatches(state, {
+  const dispatches = generateActions(state, {
     name: {
       type: 'string',
       nullable: true,

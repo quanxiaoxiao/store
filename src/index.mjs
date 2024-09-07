@@ -21,6 +21,7 @@ export default ({
     initialState,
     applyMiddleware(...middlewares),
   );
+
   return {
     getState: () => store.getState(),
     dispatch: (key, value) => {

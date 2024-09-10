@@ -79,6 +79,9 @@ export default (
     if (typeof dataNext === 'function') {
       const dataPrev = _.get(_state, currentPathList);
       const dataNextResult = dataNext(dataPrev);
+      if (dataPrev === dataNextResult) {
+        return _state;
+      }
       checkValid(validates)(handlerItem.actionName, dataNextResult);
       _state = setValue(_state, dataNextResult, currentPathList);
       handlerList = [

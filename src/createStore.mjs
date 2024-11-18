@@ -16,6 +16,7 @@ export default ({
 
   return {
     getState: () => store.getState(),
+    getStore: () => store,
     dispatch: (key, value) => {
       if (typeof value === 'function') {
         const pre = getValueOfPathname(key)(store.getState());

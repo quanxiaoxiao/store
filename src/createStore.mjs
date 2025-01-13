@@ -1,5 +1,6 @@
-import { createStore, applyMiddleware } from 'redux';
 import { getValueOfPathname } from '@quanxiaoxiao/utils';
+import { applyMiddleware,createStore } from 'redux';
+
 import getReducer from './getReducer.mjs';
 
 export default ({

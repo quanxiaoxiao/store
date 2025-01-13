@@ -1,6 +1,8 @@
-import test from 'node:test';
 import assert from 'node:assert';
+import test from 'node:test';
+
 import { createStore } from 'redux';
+
 import getReducer from './getReducer.mjs';
 
 test('getReducer', () => {
@@ -16,7 +18,7 @@ test('getReducer', () => {
   assert.deepEqual(
     store.getState(),
     {
-       name: 'cqq', obj: { foo: 'bar' } ,
+      name: 'cqq', obj: { foo: 'bar' } ,
     },
   );
   store.dispatch({
@@ -26,7 +28,7 @@ test('getReducer', () => {
   assert.deepEqual(
     store.getState(),
     {
-       name: 'cqq', obj: { foo: 'ddd' } ,
+      name: 'cqq', obj: { foo: 'ddd' } ,
     },
   );
   assert.throws(() => {
@@ -38,7 +40,7 @@ test('getReducer', () => {
   assert.deepEqual(
     store.getState(),
     {
-       name: 'cqq', obj: { foo: 'ddd' } ,
+      name: 'cqq', obj: { foo: 'ddd' } ,
     },
   );
 });

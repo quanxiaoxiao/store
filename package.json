@@ -1,6 +1,6 @@
 {
   "name": "@quanxiaoxiao/store",
-  "version": "0.5.0",
+  "version": "0.7.0",
   "type": "module",
   "scripts": {
     "lint": "tsc",
@@ -17,13 +17,14 @@
   "devDependencies": {
     "@eslint/js": "^9.3.0",
     "eslint": "^9.3.0",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
     "globals": "^15.3.0"
   },
   "engines": {
     "node": ">= 20.0.0"
   },
   "dependencies": {
-    "@quanxiaoxiao/utils": "^0.12.0",
+    "@quanxiaoxiao/utils": "^0.15.0",
     "ajv": "^8.12.0",
     "lodash": "^4.17.21",
     "redux": "^5.0.1"

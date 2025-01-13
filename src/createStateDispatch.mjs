@@ -1,5 +1,6 @@
-import _ from 'lodash';
+import { getValueOfPathList } from '@quanxiaoxiao/utils';
 import Ajv from 'ajv';
+import _ from 'lodash';
 
 const checkValid = (validates) => (key, value) => {
   if (validates[key] && !validates[key](value)) {
@@ -59,7 +60,7 @@ export default (
   let handlerList = generateActionHandlerList(initialState);
 
   let _state  = handlerList.reduce((acc, cur) => {
-    const value = _.get(acc, cur.pathList);
+    const value = getValueOfPathList(cur.pathList)(acc);
     checkValid(validates)(cur.actionName, value);
     return setValue(acc, value, cur.pathList);
   }, initialState);
@@ -77,7 +78,7 @@ export default (
     }
     const currentPathList = handlerItem.pathList;
     if (typeof dataNext === 'function') {
-      const dataPrev = _.get(_state, currentPathList);
+      const dataPrev = getValueOfPathList(currentPathList)(_state);
       const dataNextResult = dataNext(dataPrev);
       if (dataPrev === dataNextResult) {
         return _state;

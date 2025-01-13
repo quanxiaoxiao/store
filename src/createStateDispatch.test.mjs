@@ -1,5 +1,6 @@
-import test from 'node:test';
 import assert from 'node:assert';
+import test from 'node:test';
+
 import createStateDispatch from './createStateDispatch.mjs';
 
 test('createStateDispatch invalid schema invalid', () => {
@@ -233,7 +234,7 @@ test('createStateDispatch deep state 1', () => {
       },
     },
   };
-  const dispatch= createStateDispatch(state);
+  const dispatch = createStateDispatch(state);
   state = dispatch('obj.foo.tt', 'jj');
   assert.equal(state.obj.foo.tt, 'jj');
   assert.equal(state.obj.foo.name, 'bbb');
@@ -272,7 +273,7 @@ test('createStateDispatch deep state 1', () => {
     },
   });
   assert.throws(() => {
-   dispatch('obj.ding', '999');
+    dispatch('obj.ding', '999');
   });
   state = dispatch('obj.foo', '999');
   assert.deepEqual(state, {

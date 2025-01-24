@@ -2,7 +2,7 @@ import { getValueOfPathList } from '@quanxiaoxiao/utils';
 import Ajv from 'ajv';
 import _ from 'lodash';
 
-const checkValid = (validates) => (key, value) => {
+const validateStateChange = (validates) => (key, value) => {
   if (validates[key] && !validates[key](value)) {
     throw new Error(`\`${key}\` invalid, \`${JSON.stringify(validates[key].errors)}\``);
   }
@@ -10,18 +10,18 @@ const checkValid = (validates) => (key, value) => {
 
 const convertActionName = (arr) => arr.map((str) => str.replace(/\./g, '\\.')).join('.');
 
-const setValue = (data, value, pathList) => {
+const updateNestedState = (data, value, pathList) => {
   if (pathList.length === 0) {
     return value;
   }
   const [firstKey, ...other] = pathList;
   return {
     ...data,
-    [firstKey]: setValue(data[firstKey], value, other),
+    [firstKey]: updateNestedState(data[firstKey], value, other),
   };
 };
 
-const generateActionHandlerList = (state, pathList = []) => {
+const createActionHandlers = (state, pathList = []) => {
   if (!_.isPlainObject(state)) {
     return [];
   }
@@ -36,7 +36,7 @@ const generateActionHandlerList = (state, pathList = []) => {
       pathList: currentPathList,
     });
     if (_.isPlainObject(value)) {
-      result.push(...generateActionHandlerList(value, currentPathList));
+      result.push(...createActionHandlers(value, currentPathList));
     }
   }
   return result;
@@ -57,19 +57,19 @@ export default (
     }
   }
 
-  let handlerList = generateActionHandlerList(initialState);
+  let actionHandlerList = createActionHandlers(initialState);
 
-  let _state  = handlerList.reduce((acc, cur) => {
+  let _state  = actionHandlerList.reduce((acc, cur) => {
     const value = getValueOfPathList(cur.pathList)(acc);
-    checkValid(validates)(cur.actionName, value);
-    return setValue(acc, value, cur.pathList);
+    validateStateChange(validates)(cur.actionName, value);
+    return updateNestedState(acc, value, cur.pathList);
   }, initialState);
 
   return (actionName, dataNext) => {
     if (actionName == null) {
       return _state;
     }
-    const handlerItem = handlerList.find((d) => d.actionName === actionName);
+    const handlerItem = actionHandlerList.find((d) => d.actionName === actionName);
     if (!handlerItem) {
       if (/^@@redux\//.test(actionName)) {
         return _state;
@@ -83,19 +83,19 @@ export default (
       if (dataPrev === dataNextResult) {
         return _state;
       }
-      checkValid(validates)(handlerItem.actionName, dataNextResult);
-      _state = setValue(_state, dataNextResult, currentPathList);
-      handlerList = [
-        ...handlerList.filter((d) => d.actionName.indexOf(`${actionName}.`) !== 0),
-        ...generateActionHandlerList(dataNextResult, currentPathList),
+      validateStateChange(validates)(handlerItem.actionName, dataNextResult);
+      _state = updateNestedState(_state, dataNextResult, currentPathList);
+      actionHandlerList = [
+        ...actionHandlerList.filter((d) => d.actionName.indexOf(`${actionName}.`) !== 0),
+        ...createActionHandlers(dataNextResult, currentPathList),
       ];
       return _state;
     }
-    checkValid(validates)(handlerItem.actionName, dataNext);
-    _state = setValue(_state, dataNext, currentPathList);
-    handlerList = [
-      ...handlerList.filter((d) => d.actionName.indexOf(`${actionName}.`) !== 0),
-      ...generateActionHandlerList(dataNext, currentPathList),
+    validateStateChange(validates)(handlerItem.actionName, dataNext);
+    _state = updateNestedState(_state, dataNext, currentPathList);
+    actionHandlerList = [
+      ...actionHandlerList.filter((d) => d.actionName.indexOf(`${actionName}.`) !== 0),
+      ...createActionHandlers(dataNext, currentPathList),
     ];
     return _state;
   };

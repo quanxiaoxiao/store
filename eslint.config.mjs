@@ -34,6 +34,7 @@ export default [
       'block-scoped-var': 2,
       'consistent-return': 2,
       'default-case': 2,
+      'no-shadow': 2,
       'object-shorthand': 2,
       'quote-props': ['error', 'as-needed'],
       quotes: [

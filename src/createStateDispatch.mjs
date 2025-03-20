@@ -1,6 +1,8 @@
-import { getValueOfPathList } from '@quanxiaoxiao/utils';
+import {
+  getValueOfPathList,
+  isPlainObject,
+} from '@quanxiaoxiao/utils';
 import Ajv from 'ajv';
-import _ from 'lodash';
 
 const validateStateChange = (validates) => (key, value) => {
   if (validates[key] && !validates[key](value)) {
@@ -22,7 +24,7 @@ const updateNestedState = (data, value, pathList) => {
 };
 
 const createActionHandlers = (state, pathList = []) => {
-  if (!_.isPlainObject(state)) {
+  if (!isPlainObject(state)) {
     return [];
   }
   const result = [];
@@ -35,7 +37,7 @@ const createActionHandlers = (state, pathList = []) => {
       actionName: convertActionName(currentPathList),
       pathList: currentPathList,
     });
-    if (_.isPlainObject(value)) {
+    if (isPlainObject(value)) {
       result.push(...createActionHandlers(value, currentPathList));
     }
   }

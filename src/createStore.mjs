@@ -1,5 +1,8 @@
-import { getValueOfPathname } from '@quanxiaoxiao/utils';
-import { applyMiddleware,createStore } from 'redux';
+import {
+  getValueOfPathname,
+  hasDataKey,
+} from '@quanxiaoxiao/utils';
+import { applyMiddleware, createStore } from 'redux';
 
 import getReducer from './getReducer.mjs';
 
@@ -17,6 +20,12 @@ export default ({
 
   return {
     getState: () => store.getState(),
+    getValue: (key) => {
+      if (!hasDataKey(store.getStore(), key)) {
+        throw new Error(`\`${key}\` unconfig`);
+      }
+      return getValueOfPathname(key)(store.getState());
+    },
     getStore: () => store,
     dispatch: (key, value) => {
       if (typeof value === 'function') {

@@ -21,7 +21,7 @@ export default ({
   return {
     getState: () => store.getState(),
     getValue: (key) => {
-      if (!hasDataKey(store.getStore(), key)) {
+      if (!hasDataKey(store.getState(), key)) {
         throw new Error(`\`${key}\` unconfig`);
       }
       return getValueOfPathname(key)(store.getState());

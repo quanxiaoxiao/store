@@ -61,7 +61,7 @@ export default (
 
   let actionHandlerList = createActionHandlers(initialState);
 
-  let _state  = actionHandlerList.reduce((acc, cur) => {
+  let _state = actionHandlerList.reduce((acc, cur) => {
     const value = getValueOfPathList(cur.pathList)(acc);
     validateStateChange(validates)(cur.actionName, value);
     return updateNestedState(acc, value, cur.pathList);

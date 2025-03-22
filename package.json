@@ -1,6 +1,6 @@
 {
   "name": "@quanxiaoxiao/store",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "type": "module",
   "scripts": {
     "lint": "tsc",
@@ -15,8 +15,8 @@
     "registry": "https://registry.npmjs.org"
   },
   "devDependencies": {
-    "@eslint/js": "^9.3.0",
-    "eslint": "^9.3.0",
+    "@eslint/js": "^9.23.0",
+    "eslint": "^9.23.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "globals": "^16.0.0"
   },
